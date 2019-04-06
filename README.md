@@ -2,6 +2,11 @@
 
 This is the 2nd attempt to get it right.
 
-## Next up
+Right now, players can only click on "Roll dice" button.
 
-- Die rolling
+## What's new
+- Implemented dice rolling. Only the player whose turn it is will be allowed to roll the dice.
+
+## Coming next
+
+- Move pieces on the board

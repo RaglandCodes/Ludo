@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>Ludo</title>
+  </head>
+  <div id="game-space"></div>
+  <body>
+    <h1>Hello</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+    <script>
+      var socket = io.connect("http://localhost:5656");
+      socket.on("news", function(data) {
+        console.log(data);
+        socket.emit("my other event", { my: "data" });
+      });
+    </script>
+  </body>
+</html>

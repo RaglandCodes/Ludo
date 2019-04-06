@@ -4,8 +4,6 @@
   </head>
   <div id="game-space"></div>
   <body>
-    <h1>Hello</h1>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 
@@ -13,10 +11,15 @@
       const gameSpace = document.getElementById("game-space");
       let socket = io.connect("http://localhost:5656");
       let myId = "a";
-      
-      socket.on("id", id => {myId = id.id})
+      let myTurn = false;
+      let currentPlayer = "❓";
+      let diceNumber = 0;
 
-      
+      socket.on("id", id => {
+        myId = id.id;
+        console.log(myId);
+      });
+
       socket.on("reRender", data => {
         console.log(data);
 
@@ -39,9 +42,76 @@
 
         let graphics = new PIXI.Graphics();
         graphics.beginFill(0xde3249);
-        graphics.drawRect(0, 500, 500, 44);
+        graphics.drawRect(0, 500, 500, 45);
         graphics.endFill();
         app.stage.addChild(graphics);
+
+        graphics.beginFill(0xdef245);
+        graphics.drawRect(0, 545, 500, 45);
+        graphics.endFill();
+        app.stage.addChild(graphics);
+
+        // drawing the dice
+        graphics.beginFill(0xffffff);
+        graphics.drawRect(300, 546, 50, 40);
+        graphics.endFill();
+        app.stage.addChild(graphics);
+
+        
+        let diceText = new PIXI.Text(`${diceNumber}`, {
+          fontSize: 20,
+          fontWeight: "bold",
+          fill: ["#000001"]
+        });
+        diceText.x = 330;
+        diceText.y = 548;
+        app.stage.addChild(diceText);
+
+        socket.on("turn", turn => {
+          if (turn.turn == myId) {
+            myTurn = true;
+          }
+          currentPlayer = turn.colour;
+          console.log(turn);
+          diceNumber = turn.diceState;
+        });
+
+        let diceBtn = new PIXI.Graphics();
+        diceBtn.beginFill(0xdf3219);
+        diceBtn.drawRect(385, 548, 100, 40);
+        diceBtn.endFill();
+        diceBtn.buttonMode = true;
+        diceBtn.interactive = true;
+
+        diceBtn.on("pointerdown", () => {
+          if (myTurn) {
+            socket.emit("diceRoll");
+            myTurn = false;
+          } else alert("Not your turn");
+        });
+
+        app.stage.addChild(diceBtn);
+
+        let diceBtnText = new PIXI.Text("Roll Dice", {
+          fontSize: 20,
+          fontWeight: "bold",
+          fill: ["#2e4fe1"]
+        });
+
+        diceBtnText.x = 390;
+        diceBtnText.y = 551;
+
+        app.stage.addChild(diceBtnText);
+
+        let diceTurnText = new PIXI.Text(`Now it's ${currentPlayer}'s turn`, {
+          fontSize: 20,
+          fontWeight: "bold",
+          fill: ["#2e4fe1"]
+        });
+        diceTurnText.x = 50;
+        diceTurnText.y = 551;
+        app.stage.addChild(diceTurnText);
+
 
         let style = new PIXI.TextStyle({
           fontFamily: "Arial",
@@ -60,12 +130,11 @@
             style
           );
         } else if (numberOfPlayers == 4) {
-          let myColour = data.players.filter(player => player['id'] == myId)[0]['colour']
-          
-          richText = new PIXI.Text(
-            `You are ${myColour} colour.`,
-            style
-          );
+          let myColour = data.players.filter(player => player["id"] == myId)[0][
+            "colour"
+          ];
+
+          richText = new PIXI.Text(`You are ${myColour} colour.`, style);
         }
         richText.x = 10;
         richText.y = 505;

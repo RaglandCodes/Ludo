@@ -11,23 +11,66 @@
 
     <script>
       const gameSpace = document.getElementById("game-space");
+      let socket = io.connect("http://localhost:5656");
+      let myId = "a";
+      
+      socket.on("id", id => {myId = id.id})
 
-      let app = new PIXI.Application({
-        width: 500,
-        height: 800
-      });
-      gameSpace.appendChild(app.view);
-
-      const boardTexture = PIXI.Texture.from("http://localhost:3000/board.png");
-      const boardImg = new PIXI.Sprite(boardTexture);
-      boardImg.height = 500;
-      boardImg.width = 500;
-      app.stage.addChild(boardImg);
-
-      var socket = io.connect("http://localhost:5656");
-      socket.on("news", function(data) {
+      
+      socket.on("reRender", data => {
         console.log(data);
-        socket.emit("my other event", { my: "info2" });
+
+        gameSpace.innerHTML = "";
+        let numberOfPlayers = data.players.length;
+        let app = new PIXI.Application({
+          width: 500,
+          height: 700
+        });
+
+        gameSpace.appendChild(app.view);
+
+        const boardTexture = PIXI.Texture.from(
+          "https://raw.githubusercontent.com/RaglandCodes/Ludo/master/public/board.png"
+        );
+        const boardImg = new PIXI.Sprite(boardTexture);
+        boardImg.height = 500;
+        boardImg.width = 500;
+        app.stage.addChild(boardImg);
+
+        let graphics = new PIXI.Graphics();
+        graphics.beginFill(0xde3249);
+        graphics.drawRect(0, 500, 500, 44);
+        graphics.endFill();
+        app.stage.addChild(graphics);
+
+        let style = new PIXI.TextStyle({
+          fontFamily: "Arial",
+          fontSize: 23,
+          fontWeight: "bold",
+          fill: ["#ffffff"],
+          stroke: "#4a1850",
+          strokeThickness: 3,
+          wordWrap: true,
+          wordWrapWidth: 480
+        });
+        let richText = "";
+        if (numberOfPlayers < 4) {
+          richText = new PIXI.Text(
+            `There are ${numberOfPlayers} players. Waiting for 4 players.`,
+            style
+          );
+        } else if (numberOfPlayers == 4) {
+          let myColour = data.players.filter(player => player['id'] == myId)[0]['colour']
+          
+          richText = new PIXI.Text(
+            `You are ${myColour} colour.`,
+            style
+          );
+        }
+        richText.x = 10;
+        richText.y = 505;
+
+        app.stage.addChild(richText);
       });
     </script>
   </body>

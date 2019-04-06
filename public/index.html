@@ -5,13 +5,29 @@
   <div id="game-space"></div>
   <body>
     <h1>Hello</h1>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.7/pixi.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+
     <script>
+      const gameSpace = document.getElementById("game-space");
+
+      let app = new PIXI.Application({
+        width: 500,
+        height: 800
+      });
+      gameSpace.appendChild(app.view);
+
+      const boardTexture = PIXI.Texture.from("http://localhost:3000/board.png");
+      const boardImg = new PIXI.Sprite(boardTexture);
+      boardImg.height = 500;
+      boardImg.width = 500;
+      app.stage.addChild(boardImg);
+
       var socket = io.connect("http://localhost:5656");
       socket.on("news", function(data) {
         console.log(data);
-        socket.emit("my other event", { my: "data" });
+        socket.emit("my other event", { my: "info2" });
       });
     </script>
   </body>

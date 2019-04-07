@@ -57,7 +57,60 @@
         graphics.endFill();
         app.stage.addChild(graphics);
 
-        
+        // //drawing game pieces
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(400, 65, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(400, 135, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(365, 100, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(435, 100, 10);
+        //         graphics.endFill();
+        // //--- grn
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(400, 435, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(400, 365, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(365, 400, 10);
+        //         graphics.endFill();
+
+        //         graphics.lineStyle(2, 0x76FF03, 1);
+        //         graphics.beginFill(0xDD2C00, 1);
+        //         graphics.drawCircle(435, 400, 10);
+        //         graphics.endFill();
+
+        const colours = {
+          green: "0x1B5E20",
+          red: "0xDD2C00",
+          blue: "0x1A237E",
+          yellow: "0xFFA000",
+        }
+        for (const piece of data.pieceData) {
+          graphics.lineStyle(2, 0x76ff03, 1);
+          graphics.beginFill(colours[`${piece['colour']}`], 1);
+          graphics.drawCircle(piece.locationX, piece.locationY, 10);
+          graphics.endFill();
+        }
+
         let diceText = new PIXI.Text(`${diceNumber}`, {
           fontSize: 20,
           fontWeight: "bold",
@@ -111,7 +164,6 @@
         diceTurnText.x = 50;
         diceTurnText.y = 551;
         app.stage.addChild(diceTurnText);
-
 
         let style = new PIXI.TextStyle({
           fontFamily: "Arial",

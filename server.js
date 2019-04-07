@@ -17,9 +17,99 @@ let pieceData = [
   {
     name: "green0",
     colour: "green",
-    locationX: 7,
-    locationY: 7
-  }
+    locationX: 100,
+    locationY: 435
+  },
+  {
+    name: "green1",
+    colour: "green",
+    locationX: 100,
+    locationY: 365
+  },
+  {
+    name: "green2",
+    colour: "green",
+    locationX: 135,
+    locationY: 400
+  },
+  {
+    name: "green3",
+    colour: "green",
+    locationX: 65,
+    locationY: 400
+  },
+  {
+    name: "red0",
+    colour: "red",
+    locationX: 100,
+    locationY: 65
+  },
+  {
+    name: "red1",
+    colour: "red",
+    locationX: 100,
+    locationY: 135
+  },
+  {
+    name: "red2",
+    colour: "red",
+    locationX: 135,
+    locationY: 100
+  },
+  {
+    name: "red3",
+    colour: "red",
+    locationX: 65,
+    locationY: 100
+  },
+  {
+    name: "blue0",
+    colour: "blue",
+    locationX: 400,
+    locationY: 65
+  },
+  {
+    name: "blue1",
+    colour: "blue",
+    locationX: 400,
+    locationY: 135
+  },
+  {
+    name: "blue2",
+    colour: "blue",
+    locationX: 365,
+    locationY: 100
+  },
+  {
+    name: "blue3",
+    colour: "blue",
+    locationX: 435,
+    locationY: 100
+  },
+  {
+    name: "yellow0",
+    colour: "yellow",
+    locationX: 400,
+    locationY: 435
+  },
+  {
+    name: "yellow1",
+    colour: "yellow",
+    locationX: 400,
+    locationY: 365
+  },
+  {
+    name: "yellow2",
+    colour: "yellow",
+    locationX: 365,
+    locationY: 400
+  },
+  {
+    name: "yellow3",
+    colour: "yellow",
+    locationX: 435,
+    locationY: 400
+  },
 ];
 let players = [];
 let turn = 0;
@@ -29,9 +119,9 @@ io.on("connection", function(socket) {
     id: socket.id,
     colour: ""
   });
-  console.log(players.length);
+  console.log(`Active players = ${players.length}`);
   io.to(socket.id).emit("id", { id: socket.id });
-  if (players.length > 3) {
+  if (players.length == 4) {
     for (i = 0; i < 4; i++) {
       players[i]["colour"] = colourOrder[i];
     }
@@ -60,10 +150,14 @@ io.on("connection", function(socket) {
     console.log(players[turn]["colour"]);
     io.sockets.emit("reRender", { players: players });
   });
-  io.sockets.emit("reRender", { players: players });
+  io.sockets.emit("reRender", { players: players, pieceData:pieceData });
+  
   socket.on("disconnect", () => {
     players = players.filter(player => player["id"] != socket.id);
-    console.log(players.length);
+    
+    
+    console.log(`Active players = ${players.length}`);
+    
     io.sockets.emit("reRender", { players: players });
   });
 });

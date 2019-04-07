@@ -18,7 +18,7 @@ let pieceData = [
     name: "green0",
     colour: "green",
     number: "0",
-    staringPositionIndex: 0,      //refers to the const path below
+    staringPositionIndex: 0, //refers to the const path below
     endPositionIndex: 0,
     locationX: 100,
     locationY: 435,
@@ -194,7 +194,7 @@ const path = [
   [47, 283],
   [13, 283],
 
-  [15, 215],  // red starts
+  [15, 215], // red starts
 
   [50, 214],
   [85, 214],
@@ -218,12 +218,12 @@ const path = [
   [285, 155],
   [285, 187],
 
-  [317,215],
-  [352,215],
-  [387,215],
-  [412,215],
-  [444,215],
-  [484,215],
+  [317, 215],
+  [352, 215],
+  [387, 215],
+  [412, 215],
+  [444, 215],
+  [484, 215],
 
   [484, 245],
 
@@ -242,7 +242,6 @@ const path = [
   [285, 483],
 
   [250, 483]
-  
 ];
 io.on("connection", function(socket) {
   players.push({
@@ -281,26 +280,34 @@ io.on("connection", function(socket) {
         piece["number"] == pieceClickData["number"]
     );
 
-    if(pieceData[pieceIndex]['locationDescription'] == "outside")
-    {
-      pieceData[pieceIndex]['pathIndex'] = pieceData[pieceIndex]['staringPositionIndex'];
-      pieceData[pieceIndex]['locationX'] = path[pieceData[pieceIndex]['staringPositionIndex']][0];
-      pieceData[pieceIndex]['locationY'] = path[pieceData[pieceIndex]['staringPositionIndex']][1];
-      pieceData[pieceIndex]['locationDescription'] = "whitespaces";
-    }
-    else if(pieceData[pieceIndex]['locationDescription'] == "whitespaces")
-    {
+    if (pieceData[pieceIndex]["locationDescription"] == "outside") {
+      pieceData[pieceIndex]["pathIndex"] =
+        pieceData[pieceIndex]["staringPositionIndex"];
+
+      pieceData[pieceIndex]["locationX"] =
+        path[pieceData[pieceIndex]["staringPositionIndex"]][0];
+
+      pieceData[pieceIndex]["locationY"] =
+        path[pieceData[pieceIndex]["staringPositionIndex"]][1];
+
+      pieceData[pieceIndex]["locationDescription"] = "whitespaces";
+    } else if (pieceData[pieceIndex]["locationDescription"] == "whitespaces") {
       console.log("in white spaces");
-      pieceData[pieceIndex]['pathIndex'] = pieceData[pieceIndex]['pathIndex'] + 1;
-      pieceData[pieceIndex]['locationX'] = path[pieceData[pieceIndex]['pathIndex']][0];
-      pieceData[pieceIndex]['locationY'] = path[pieceData[pieceIndex]['pathIndex']][1];
-      
-    }
-    else if(pieceData[pieceIndex]['locationDescription'] == "colouredBox")
-    {
+      if ((pieceData[pieceIndex]["pathIndex"]+1) == path.length)
+        pieceData[pieceIndex]["pathIndex"] = 0;
+      else
+        pieceData[pieceIndex]["pathIndex"] =
+          pieceData[pieceIndex]["pathIndex"] + 1;
 
-    }
+      pieceData[pieceIndex]["locationX"] =
+        path[pieceData[pieceIndex]["pathIndex"]][0];
 
+      pieceData[pieceIndex]["locationY"] =
+        path[pieceData[pieceIndex]["pathIndex"]][1];
+    } else if (
+      pieceData[pieceIndex]["locationDescription"] == "colouredSpaces"
+    ) {
+    }
 
     io.sockets.emit("turn", {
       turn: players[turn]["id"],
@@ -314,7 +321,11 @@ io.on("connection", function(socket) {
   socket.on("diceRoll", () => {
     console.log("dice was rolled");
 
-    diceNumber = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+    //diceNumber = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+
+    diceNumber = Math.floor(Math.random() * (18)) + 11; 
+    // ^ Using bigger values to play more moves at once and debug faster
+    
     movesLeft = diceNumber;
     console.log(`turn = ${turn}`);
     io.sockets.emit("turn", {

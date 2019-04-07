@@ -321,9 +321,9 @@ io.on("connection", function(socket) {
   socket.on("diceRoll", () => {
     console.log("dice was rolled");
 
-    //diceNumber = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+    diceNumber = Math.floor(Math.random() * (6)) + 1;
 
-    diceNumber = Math.floor(Math.random() * (18)) + 11; 
+//    diceNumber = Math.floor(Math.random() * (18)) + 11; 
     // ^ Using bigger values to play more moves at once and debug faster
     
     movesLeft = diceNumber;

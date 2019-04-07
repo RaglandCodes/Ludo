@@ -18,6 +18,8 @@ let pieceData = [
     name: "green0",
     colour: "green",
     number: "0",
+    staringPositionIndex: 0,      //refers to the const path below
+    endPositionIndex: 0,
     locationX: 100,
     locationY: 435,
     locationDescription: "outside"
@@ -26,6 +28,8 @@ let pieceData = [
     name: "green1",
     colour: "green",
     number: "1",
+    staringPositionIndex: 0,
+    endPositionIndex: 0,
     locationX: 100,
     locationY: 365,
     locationDescription: "outside"
@@ -34,6 +38,8 @@ let pieceData = [
     name: "green2",
     number: "2",
     colour: "green",
+    staringPositionIndex: 0,
+    endPositionIndex: 0,
     locationX: 135,
     locationY: 400,
     locationDescription: "outside"
@@ -42,6 +48,8 @@ let pieceData = [
     name: "green3",
     number: "3",
     colour: "green",
+    staringPositionIndex: 0,
+    endPositionIndex: 0,
     locationX: 65,
     locationY: 400,
     locationDescription: "outside"
@@ -50,6 +58,8 @@ let pieceData = [
     name: "red0",
     number: "0",
     colour: "red",
+    staringPositionIndex: 13,
+    endPositionIndex: 0,
     locationX: 100,
     locationY: 65,
     locationDescription: "outside"
@@ -58,6 +68,8 @@ let pieceData = [
     name: "red1",
     colour: "red",
     number: "1",
+    staringPositionIndex: 13,
+    endPositionIndex: 0,
     locationX: 100,
     locationY: 135,
     locationDescription: "outside"
@@ -66,6 +78,8 @@ let pieceData = [
     name: "red2",
     colour: "red",
     number: "2",
+    staringPositionIndex: 13,
+    endPositionIndex: 0,
     locationX: 135,
     locationY: 100,
     locationDescription: "outside"
@@ -74,6 +88,8 @@ let pieceData = [
     name: "red3",
     colour: "red",
     number: "3",
+    staringPositionIndex: 13,
+    endPositionIndex: 0,
     locationX: 65,
     locationY: 100,
     locationDescription: "outside"
@@ -82,6 +98,8 @@ let pieceData = [
     name: "blue0",
     colour: "blue",
     number: "0",
+    staringPositionIndex: 26,
+    endPositionIndex: 0,
     locationX: 400,
     locationY: 65,
     locationDescription: "outside"
@@ -91,6 +109,8 @@ let pieceData = [
     colour: "blue",
     number: "1",
     locationDescription: "outside",
+    staringPositionIndex: 26,
+    endPositionIndex: 0,
     locationX: 400,
     locationY: 135
   },
@@ -98,6 +118,8 @@ let pieceData = [
     name: "blue2",
     colour: "blue",
     number: "2",
+    staringPositionIndex: 26,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 365,
     locationY: 100
@@ -106,6 +128,8 @@ let pieceData = [
     name: "blue3",
     colour: "blue",
     number: "3",
+    staringPositionIndex: 26,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 435,
     locationY: 100
@@ -114,6 +138,8 @@ let pieceData = [
     name: "yellow0",
     colour: "yellow",
     number: "0",
+    staringPositionIndex: 39,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 400,
     locationY: 435
@@ -122,6 +148,8 @@ let pieceData = [
     name: "yellow1",
     colour: "yellow",
     number: "1",
+    staringPositionIndex: 39,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 400,
     locationY: 365
@@ -130,6 +158,8 @@ let pieceData = [
     name: "yellow2",
     colour: "yellow",
     number: "2",
+    staringPositionIndex: 39,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 365,
     locationY: 400
@@ -138,6 +168,8 @@ let pieceData = [
     name: "yellow3",
     colour: "yellow",
     number: "3",
+    staringPositionIndex: 39,
+    endPositionIndex: 0,
     locationDescription: "outside",
     locationX: 435,
     locationY: 400
@@ -162,12 +194,54 @@ const path = [
   [47, 283],
   [13, 283],
 
-  [15, 247][(15, 214)], // red starts
+  [15, 247], // red starts //13
   [50, 214],
   [85, 214],
   [120, 214],
   [154, 214],
-  [190, 214]
+  [187, 214],
+
+  [215, 185],
+  [215, 150],
+  [215, 115],
+  [215, 80],
+  [215, 47],
+  [215, 13],
+
+  [250, 15],
+
+  [285, 17],
+  [285, 52],
+  [285, 87],
+  [285, 120],
+  [285, 155],
+  [285, 187],
+
+  [317,215],
+  [352,215],
+  [387,215],
+  [412,215],
+  [444,215],
+  [484,215],
+
+  [484, 245],
+
+  [484, 283],
+  [444, 283],
+  [412, 283],
+  [387, 283],
+  [352, 283],
+  [317, 283],
+
+  [285, 310],
+  [285, 343],
+  [285, 378],
+  [285, 413],
+  [285, 448],
+  [285, 483],
+
+  [250, 483]
+  
 ];
 io.on("connection", function(socket) {
   players.push({
@@ -199,7 +273,34 @@ io.on("connection", function(socket) {
       else turn += 1;
     }
     console.log(`turn = ${turn}`);
-    
+
+    let pieceIndex = pieceData.findIndex(
+      piece =>
+        piece["colour"] == pieceClickData["colour"] &&
+        piece["number"] == pieceClickData["number"]
+    );
+
+    if(pieceData[pieceIndex]['locationDescription'] == "outside")
+    {
+      pieceData[pieceIndex]['pathIndex'] = pieceData[pieceIndex]['staringPositionIndex'];
+      pieceData[pieceIndex]['locationX'] = path[pieceData[pieceIndex]['staringPositionIndex']][0];
+      pieceData[pieceIndex]['locationY'] = path[pieceData[pieceIndex]['staringPositionIndex']][1];
+      pieceData[pieceIndex]['locationDescription'] = "whitespaces";
+    }
+    else if(pieceData[pieceIndex]['locationDescription'] == "whitespaces")
+    {
+      console.log("in white spaces");
+      pieceData[pieceIndex]['pathIndex'] = pieceData[pieceIndex]['pathIndex'] + 1;
+      pieceData[pieceIndex]['locationX'] = path[pieceData[pieceIndex]['pathIndex']][0];
+      pieceData[pieceIndex]['locationY'] = path[pieceData[pieceIndex]['pathIndex']][1];
+      
+    }
+    else if(pieceData[pieceIndex]['locationDescription'] == "colouredBox")
+    {
+
+    }
+
+
     io.sockets.emit("turn", {
       turn: players[turn]["id"],
       colour: players[turn]["colour"],

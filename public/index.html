@@ -8,12 +8,16 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 
     <script>
-      const gameSpace = document.getElementById("game-space");
       let socket = io.connect("http://localhost:5656");
+
+      const gameSpace = document.getElementById("game-space");
       let myId = "a";
       let myTurn = false;
       let currentPlayer = "❓";
       let diceNumber = 0;
+      let movesLeft = 0;
+      let diceRolled = false;
+      let myColour = "";
 
       socket.on("id", id => {
         myId = id.id;
@@ -58,11 +62,11 @@
         app.stage.addChild(graphics);
 
         // //drawing game pieces
-        //         graphics.lineStyle(2, 0x76FF03, 1);
-        //         graphics.beginFill(0xDD2C00, 1);
-        //         graphics.drawCircle(400, 65, 10);
-        //         graphics.endFill();
-
+        // graphics.lineStyle(2, 0x76ff03, 1);
+        // graphics.beginFill(0xdd2c00, 1);
+        // graphics.drawCircle(154, 214, 10);
+        // graphics.endFill();
+        //483
         //         graphics.lineStyle(2, 0x76FF03, 1);
         //         graphics.beginFill(0xDD2C00, 1);
         //         graphics.drawCircle(400, 135, 10);
@@ -102,13 +106,40 @@
           green: "0x1B5E20",
           red: "0xDD2C00",
           blue: "0x1A237E",
-          yellow: "0xFFA000",
-        }
+          yellow: "0xFFA000"
+        };
+        // console.log("⬇ data.piecedata");
+        // console.log(data.pieceData);
+
         for (const piece of data.pieceData) {
-          graphics.lineStyle(2, 0x76ff03, 1);
-          graphics.beginFill(colours[`${piece['colour']}`], 1);
-          graphics.drawCircle(piece.locationX, piece.locationY, 10);
-          graphics.endFill();
+          let pieceGraphic = new PIXI.Graphics();
+          pieceGraphic.lineStyle(2, 0x76ff03, 1);
+          pieceGraphic.beginFill(colours[`${piece["colour"]}`], 1);
+          pieceGraphic.drawCircle(piece.locationX, piece.locationY, 10);
+          pieceGraphic.endFill();
+
+          pieceGraphic.buttonMode = true;
+          pieceGraphic.interactive = true;
+
+          pieceGraphic.on("pointerdown", () => {
+            if (piece["colour"] == myColour && diceRolled == true) {
+              if (myTurn == true)
+                {socket.emit("pieceClick", {
+                  colour: piece["colour"],
+                  number: piece["number"]
+                });
+              if(movesLeft == 1)
+              {
+                diceRolled = false;
+              }
+              }
+
+              else alert("❌ Not your turn ❌❌");
+            }
+            else if(diceRolled == false) alert("🎲 Roll the dice first");
+            else if (piece['colour' !== myColour]) alert("❌Not your piece ❌")
+          });
+          app.stage.addChild(pieceGraphic);
         }
 
         let diceText = new PIXI.Text(`${diceNumber}`, {
@@ -121,8 +152,13 @@
         app.stage.addChild(diceText);
 
         socket.on("turn", turn => {
+          movesLeft = turn.movesLeft;
+
           if (turn.turn == myId) {
             myTurn = true;
+            //diceRolled = false;
+          } else {
+            myTurn = false;
           }
           currentPlayer = turn.colour;
           console.log(turn);
@@ -137,10 +173,14 @@
         diceBtn.interactive = true;
 
         diceBtn.on("pointerdown", () => {
-          if (myTurn) {
+          if (myTurn && diceRolled == false) {
+            // diceRolled ensures that player whose turn it is now, will only roll his dice once
+            diceRolled = true;
+            console.log(diceRolled);
+
             socket.emit("diceRoll");
-            myTurn = false;
-          } else alert("Not your turn");
+            //myTurn = false;
+          } else alert("Not ❌ your ❌ turn ❌", diceRolled);
         });
 
         app.stage.addChild(diceBtn);
@@ -182,7 +222,7 @@
             style
           );
         } else if (numberOfPlayers == 4) {
-          let myColour = data.players.filter(player => player["id"] == myId)[0][
+          myColour = data.players.filter(player => player["id"] == myId)[0][
             "colour"
           ];
 
